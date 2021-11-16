@@ -29,64 +29,109 @@ import javax.ws.rs.core.MediaType;
 @Path("javaee8")
 public class JavaEE8Resource {
     /**
-    * POST method to register a new image
-* @param title
-* @param description
-* @param keywords
-* @param author
-* @param creator
-* @param capt_date
-* @return
-*/
+     POST method to register a new image     
+     * @param title    
+     * @param description     
+     * @param keywords         
+     * @param author    
+     * @param creator    
+     * @param capt_date        
+     * @return    
+     */
     @Path("register")
     @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED) @Produces(MediaType.TEXT_HTML)
-    public String registerImage (@FormParam("title") String title,
-                @FormParam("description") String description, 
-                @FormParam("keywords") String keywords,
-                @FormParam("author") String author,
-                @FormParam("creator") String creator,
-                @FormParam("capture") String capt_date) throws ClassNotFoundException{
-return null;
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)    
+    @Produces(MediaType.TEXT_HTML)
+    public String registerImage (@FormParam("title") String title,            
+    @FormParam("description") String description,            
+    @FormParam("keywords") String keywords,            
+    @FormParam("author") String author,            
+    @FormParam("creator") String creator,            
+    @FormParam("capture") String capt_date) {
+        ModificacionyConsulta connection = new ModificacionyConsulta();
+        try {
+            Class.forName("org.apache.derby.jdbc.ClientDriver");
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss");  
+            LocalDateTime now = LocalDateTime.now();
+            String filename = dtf.format(now);
+            boolean error = connection.registrarImagen(title, description, keywords, author, creator, capt_date, filename);
             
-
-    }
-
-
-/**
-* POST method to register a new image
-* @param title
-* @param description
-* @param keywords
-* @param author
-* @param creator
-* @param capt_date
-* @return
-*/
-    @Path("modify")
-    @POST
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED) @Produces(MediaType.TEXT_HTML)
-    public String modifyImage (@PathParam("id") int id, @FormParam("title") String title,
-            @FormParam("description") String description, 
-            @FormParam("keywords") String keywords, 
-            @FormParam("author") String author,
-            @FormParam("creator") String creator, 
-            @FormParam("capture") String capt_date){
-        return null;
-    }
-/**   
-* POST method to delete an existing image     
-* @param id       
-* @return
- */  
-        @Path("delete")   
-        @POST    
-        @Consumes(MediaType.APPLICATION_FORM_URLENCODED)    
-        @Produces(MediaType.TEXT_HTML)    
-        public String deleteImage (@FormParam("id") String id){
-            return null;
+            
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            
+        } finally{
+            connection.cerrarconexion();
         }
-
+        String result = "La imagen se ha registrado correctamente";
+        return result;
+    }
+    
+    /**
+     POST method to modify an existing image     
+     * @param id
+     * @param title    
+     * @param description     
+     * @param keywords         
+     * @param author    
+     * @param creator    
+     * @param capt_date        
+     * @return    
+     */
+    @POST
+    @Path("modify")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED) 
+    @Produces(MediaType.TEXT_HTML)
+    public String modifyImage (@FormParam("id") String id,            
+    @FormParam("title") String title,             
+    @FormParam("description") String description,            
+    @FormParam("keywords") String keywords,            
+    @FormParam("author") String author,            
+    @FormParam("creator") String creator,            
+    @FormParam("capture") String capt_date) {
+        ModificacionyConsulta connection = new ModificacionyConsulta();
+        try {
+            Class.forName("org.apache.derby.jdbc.ClientDriver");
+            int id_ = Integer.parseInt(id);
+            boolean error = connection.updateimagen(title, description, keywords, author, capt_date, id_);
+            
+            
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            
+        } finally{
+            connection.cerrarconexion();
+        }
+        String result = "La imagen " + id + " se ha modificado correctamente"; //ir a listar???
+        return result; 
+    }
+    
+    /**
+     POST method to register a new image     
+     * @param id
+     * @return    
+     */
+    @Path("delete")
+    @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)    
+    @Produces(MediaType.TEXT_HTML)
+    public String deleteImage (@FormParam("id") String id) {
+        ModificacionyConsulta connection = new ModificacionyConsulta();
+        try {
+            Class.forName("org.apache.derby.jdbc.ClientDriver");
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss");  
+            LocalDateTime now = LocalDateTime.now();
+            String filename = dtf.format(now);
+            
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            
+        } finally{
+            connection.cerrarconexion();
+        }
+        String result = "La imagen " + id + " se ha eliminado correctamente"; //ir a listar???
+        return result;
+    }
 
 /**
  * GET method to list images
